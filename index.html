@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Catcher</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="character-select" class="screen">
+        <h1>Choose Your Character</h1>
+        <div class="options">
+            <div class="option" data-char="explorer">
+                <div class="circle" style="background-color:#4fc3f7;"></div>
+                <span>Explorer</span>
+            </div>
+            <div class="option" data-char="scout">
+                <div class="circle" style="background-color:#81c784;"></div>
+                <span>Scout</span>
+            </div>
+            <div class="option" data-char="pilot">
+                <div class="circle" style="background-color:#ffb74d;"></div>
+                <span>Pilot</span>
+            </div>
+        </div>
+        <button id="startBtn" disabled>Start Game</button>
+    </div>
+    <div id="game-screen" class="screen hidden">
+        <canvas id="gameCanvas"></canvas>
+        <div id="score">Score: 0</div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
