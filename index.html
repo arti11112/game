@@ -2,33 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Catcher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Star Catcher — Neon Odyssey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- ============ CHARACTER SELECT ============ -->
     <div id="character-select" class="screen">
-        <h1>Choose Your Character</h1>
+        <h1 class="title">STAR<span>CATCHER</span></h1>
+        <p class="subtitle">NEON ODYSSEY</p>
         <div class="options">
+            <div class="option" data-char="pilot">
+                <div class="card">
+                    <div class="portrait"><img src="pilot.png" alt="Pilot"></div>
+                    <div class="card-name">PILOT</div>
+                    <div class="card-ability">⚡ Fast &amp; Nimble</div>
+                </div>
+            </div>
             <div class="option" data-char="explorer">
-                <div class="circle" style="background-color:#4fc3f7;"></div>
-                <span>Explorer</span>
+                <div class="card">
+                    <div class="portrait"><img src="explorer.png" alt="Explorer"></div>
+                    <div class="card-name">EXPLORER</div>
+                    <div class="card-ability">🧲 Star Magnet</div>
+                </div>
             </div>
             <div class="option" data-char="scout">
-                <div class="circle" style="background-color:#81c784;"></div>
-                <span>Scout</span>
-            </div>
-            <div class="option" data-char="pilot">
-                <div class="circle" style="background-color:#ffb74d;"></div>
-                <span>Pilot</span>
+                <div class="card">
+                    <div class="portrait"><img src="scout.png" alt="Scout"></div>
+                    <div class="card-name">SCOUT</div>
+                    <div class="card-ability">❤️ Extra Lives</div>
+                </div>
             </div>
         </div>
-        <button id="startBtn" disabled>Start Game</button>
+        <button id="startBtn" disabled>LAUNCH MISSION</button>
+        <p id="bestLabel" class="best-label"></p>
     </div>
+
+    <!-- ============ GAME ============ -->
     <div id="game-screen" class="screen hidden">
-        <canvas id="gameCanvas"></canvas>
-        <div id="score">Score: 0</div>
+        <div class="game-wrap">
+            <canvas id="gameCanvas"></canvas>
+            <div id="hud">
+                <div class="hud-left">
+                    <div id="score">0</div>
+                    <div id="dash-wrap"><div id="dash-bar"></div><span>DASH</span></div>
+                </div>
+                <div class="hud-center">
+                    <div id="combo" class="hidden">x2 COMBO</div>
+                    <div id="level">LV 1</div>
+                </div>
+                <div class="hud-right">
+                    <div id="lives"></div>
+                    <div id="high">BEST 0</div>
+                </div>
+            </div>
+            <div id="level-flash" class="hidden"></div>
+            <div id="game-over" class="hidden">
+                <h2>MISSION OVER</h2>
+                <div id="final-score">0</div>
+                <div id="new-best" class="hidden">★ NEW BEST! ★</div>
+                <div id="final-stats"></div>
+                <div class="buttons">
+                    <button id="restartBtn">FLY AGAIN</button>
+                    <button id="menuBtn" class="ghost">CHANGE CREW</button>
+                </div>
+            </div>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
