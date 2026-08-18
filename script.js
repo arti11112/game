@@ -135,6 +135,9 @@ function spawnShooter() {
 let nextShooter = 2.5;
 function drawBg(dt, speedMul = 1) {
     const w = bg.w, h = bg.h;
+    const dim = inGameMode ? 0.45 : 1;      // nebula dimming during play
+    const starDim = inGameMode ? 0.68 : 1;  // star dimming during play
+    const streaking = inGameMode;           // hyperspace streaks during play
     // Nebula
     bgCtx.save();
     bgCtx.globalCompositeOperation = 'lighter';
@@ -143,7 +146,7 @@ function drawBg(dt, speedMul = 1) {
         if (n.x < -n.r) n.x = w + n.r; if (n.x > w + n.r) n.x = -n.r;
         if (n.y < -n.r) n.y = h + n.r; if (n.y > h + n.r) n.y = -n.r;
         const g = bgCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-        g.addColorStop(0, n.col + n.a + ')');
+        g.addColorStop(0, n.col + (n.a * dim) + ')');
         g.addColorStop(1, n.col + '0)');
         bgCtx.fillStyle = g;
         bgCtx.fillRect(n.x - n.r, n.y - n.r, n.r * 2, n.r * 2);
@@ -153,12 +156,23 @@ function drawBg(dt, speedMul = 1) {
         s.y += s.sp * speedMul * dt;
         if (s.y > h + 2) { s.y = -2; s.x = Math.random() * w; }
         s.tw += s.tws * dt;
-        const a = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(s.tw));
+        const a = (0.35 + 0.65 * (0.5 + 0.5 * Math.sin(s.tw))) * starDim;
         bgCtx.globalAlpha = a;
         bgCtx.fillStyle = s.hue ? (s.hue === 200 ? '#9fd8ff' : '#ffd9a0') : '#ffffff';
-        bgCtx.beginPath();
-        bgCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        bgCtx.fill();
+        if (streaking && s.r > 1.5) {
+            // Stretch into a vertical streak for a hyperspace feel
+            const len = Math.min(26, s.sp * speedMul * 3.2);
+            bgCtx.strokeStyle = bgCtx.fillStyle;
+            bgCtx.lineWidth = s.r * 0.7;
+            bgCtx.beginPath();
+            bgCtx.moveTo(s.x, s.y - len);
+            bgCtx.lineTo(s.x, s.y);
+            bgCtx.stroke();
+        } else {
+            bgCtx.beginPath();
+            bgCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            bgCtx.fill();
+        }
     }
     bgCtx.globalAlpha = 1;
     // Shooting stars
@@ -171,7 +185,7 @@ function drawBg(dt, speedMul = 1) {
         if (sh.life <= 0 || sh.x < -100 || sh.y > h + 100) { bg.shooters.splice(i, 1); continue; }
         const tail = 12;
         const g = bgCtx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * tail, sh.y - sh.vy * tail);
-        g.addColorStop(0, 'rgba(255,255,255,' + (0.8 * sh.life) + ')');
+        g.addColorStop(0, 'rgba(255,255,255,' + (0.8 * sh.life * (inGameMode ? 0.5 : 1)) + ')');
         g.addColorStop(1, 'rgba(255,255,255,0)');
         bgCtx.strokeStyle = g;
         bgCtx.lineWidth = 1.6;
@@ -181,6 +195,18 @@ function drawBg(dt, speedMul = 1) {
         bgCtx.stroke();
     }
     bgCtx.restore();
+
+    // Dark veil over everything while playing (deep space feel)
+    if (inGameMode) {
+        bgCtx.save();
+        bgCtx.globalCompositeOperation = 'source-over';
+        const vg = bgCtx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.75);
+        vg.addColorStop(0, 'rgba(1,2,10,0.15)');
+        vg.addColorStop(1, 'rgba(0,1,8,0.40)');
+        bgCtx.fillStyle = vg;
+        bgCtx.fillRect(0, 0, w, h);
+        bgCtx.restore();
+    }
 }
 
 // ---------- Game state ----------
@@ -194,6 +220,7 @@ let keys = {};
 let touchTarget = null;
 let rafId = null;
 let bgRafId = null;
+let inGameMode = false;
 
 const MAX_LIVES = 5;
 
@@ -235,6 +262,8 @@ $('restartBtn').addEventListener('click', () => { ensureAudio(); SFX.launch(); s
 $('menuBtn').addEventListener('click', () => {
     ensureAudio();
     stopGame();
+    inGameMode = false;
+    $('dark-veil').classList.remove('on');
     gameScreen.classList.add('hidden');
     menuScreen.classList.remove('hidden');
     $('game-over').classList.add('hidden');
@@ -260,6 +289,8 @@ function resizeGame() {
 function startGame() {
     menuScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
+    inGameMode = true;
+    $('dark-veil').classList.add('on');
     $('game-over').classList.add('hidden');
     $('level-flash').classList.add('hidden');
     clearTimeout(flashLevel._t);

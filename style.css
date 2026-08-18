@@ -27,6 +27,20 @@ html, body {
     background: radial-gradient(ellipse at 30% 20%, #0d1233 0%, #05060f 55%, #02020a 100%);
 }
 
+/* Full-screen dark veil — fades in over the whole scene during gameplay */
+#dark-veil {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 45%,
+        rgba(2,3,12,0.52) 0%,
+        rgba(1,2,10,0.74) 100%);
+    opacity: 0;
+    transition: opacity 0.7s ease;
+}
+#dark-veil.on { opacity: 1; }
+
 .screen {
     position: relative;
     z-index: 1;
@@ -233,9 +247,27 @@ button.ghost:hover:not(:disabled) {
     width: 100%;
     height: 100%;
     border-radius: 18px;
-    border: 2px solid rgba(79,195,247,0.35);
-    box-shadow: 0 0 40px rgba(41,98,255,0.25), inset 0 0 60px rgba(0,0,0,0.55);
+    border: 2px solid rgba(79,195,247,0.20);
     background: transparent;
+    animation: canvasGlow 5s ease-in-out infinite;
+}
+
+@keyframes canvasGlow {
+    0%, 100% { box-shadow: 0 0 24px rgba(10,25,70,0.30), inset 0 0 70px rgba(0,0,0,0.65); }
+    50%      { box-shadow: 0 0 46px rgba(25,55,130,0.40), inset 0 0 70px rgba(0,0,0,0.65); }
+}
+
+/* Dark vignette over the play area */
+#vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 18px;
+    z-index: 1;
+    background: radial-gradient(ellipse at 50% 42%,
+        rgba(0,0,0,0) 30%,
+        rgba(2,4,14,0.45) 68%,
+        rgba(1,2,9,0.85) 100%);
 }
 
 /* HUD */
@@ -247,6 +279,7 @@ button.ghost:hover:not(:disabled) {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    z-index: 2;
 }
 
 .hud-left, .hud-center, .hud-right {
@@ -336,6 +369,7 @@ button.ghost:hover:not(:disabled) {
     text-shadow: 0 0 30px rgba(125,249,255,0.95), 0 0 60px rgba(79,195,247,0.8);
     animation: levelFlash 1.2s ease-out forwards;
     pointer-events: none;
+    z-index: 4;
 }
 @keyframes levelFlash {
     0% { transform: scale(0.4); opacity: 0; }
